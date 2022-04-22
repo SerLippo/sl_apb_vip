@@ -18,12 +18,24 @@ class apb_master_agent extends uvm_agent;
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-    void'(uvm_config_db#(virtual apb_if)::get(this, "", "vif", vif));
-    if(this.vif == null)
-      `uvm_error("APB_MST_AGT", "didn't get vif object from config db")
     void'(uvm_config_db#(apb_config)::get(this, "", "cfg", cfg));
     if(this.cfg == null)
       `uvm_error("APB_MST_AGT", "didn't get cfg object from config db")
+    if(cfg.apb_bus_width == BUS_WIDTH_8) begin
+      void'(uvm_config_db#(virtual apb_if#(8,8))::get(this, "", "vif", vif));
+      if(this.vif == null)
+        `uvm_error("APB_MST_AGT", "didn't get vif object from config db")
+    end
+    else if(cfg.apb_bus_width == BUS_WIDTH_16) begin
+      void'(uvm_config_db#(virtual apb_if#(16,16))::get(this, "", "vif", vif));
+      if(this.vif == null)
+        `uvm_error("APB_MST_AGT", "didn't get vif object from config db")
+    end
+    else if(cfg.apb_bus_width == BUS_WIDTH_16) begin
+      void'(uvm_config_db#(virtual apb_if#(32,32))::get(this, "", "vif", vif));
+      if(this.vif == null)
+        `uvm_error("APB_MST_AGT", "didn't get vif object from config db")
+    end
     mon = apb_master_monitor::type_id::create("mon", this);
     mon.vif = this.vif;
     mon.cfg = this.cfg;

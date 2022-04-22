@@ -3,9 +3,9 @@
 
 class apb3_single_trans_virt_seq extends apb_base_virtual_sequence;
 
-  apb_mst_single_wt_seq single_wt_seq;
-  apb_mst_single_rd_seq single_rd_seq;
-  apb_mst_wt_rd_seq wt_rd_seq;
+  apb_mst_single_wt_seq#(bus_width, bus_width) single_wt_seq;
+  apb_mst_single_rd_seq#(bus_width, bus_width) single_rd_seq;
+  apb_mst_wt_rd_seq#(bus_width, bus_width) wt_rd_seq;
   rand int test_num = 100;
 
   constraint cstr{

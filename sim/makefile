@@ -1,5 +1,5 @@
 TOP 			= apb_tb
-TEST 		 ?= apb4_single_trans_test
+TEST 		 ?= apb3_single_trans_test
 VERDI    ?= 0
 GUI      ?= 0
 COV      ?= 0
@@ -37,7 +37,7 @@ endif
 
 export SYNOPSYS_SIM_SETUP = ./synopsys_sim.setup
 
-all: clean comp elab sim_all cov
+all: clean comp elab
 
 prepare:
 	mkdir -p $(OUT)/work
