@@ -12,7 +12,7 @@ module apb_tb;
 
   initial begin
     fork
-      begin 
+      begin
         forever #5ns clk = !clk;
       end
       begin

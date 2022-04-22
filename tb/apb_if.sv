@@ -3,91 +3,91 @@
 
 interface apb_if(input clk, input rstn);
 
-	// apb signal
-	logic[31:0] paddr;
-	logic				pwrite;
-	logic				psel;
-	logic 			penable;
-	logic[31:0] pwdata;
+  // apb signal
+  logic[31:0] paddr;
+  logic				pwrite;
+  logic				psel;
+  logic 			penable;
+  logic[31:0] pwdata;
   logic[2:0]  pprot;
   logic[3:0]  pstrb;
-	logic[31:0] prdata;
-	logic 			pready;
-	logic				pslverr;
+  logic[31:0] prdata;
+  logic 			pready;
+  logic				pslverr;
 
-	// control flags
-	bit 				has_checks = 1;
-	bit 				has_coverage = 1;
+  // control flags
+  bit 				has_checks = 1;
+  bit 				has_coverage = 1;
 
-	import uvm_pkg::*;
-	`include "uvm_macros.svh"
+  import uvm_pkg::*;
+  `include "uvm_macros.svh"
 
-	clocking cb_mst@(posedge clk);
-		default input #1ps output #1ps;
-		output paddr, pwrite, psel, penable, pwdata, pprot, pstrb;
-		input prdata, pready, pslverr;
-	endclocking: cb_mst
+  clocking cb_mst@(posedge clk);
+    default input #1ps output #1ps;
+    output paddr, pwrite, psel, penable, pwdata, pprot, pstrb;
+    input prdata, pready, pslverr;
+  endclocking: cb_mst
 
-	clocking cb_slv@(posedge clk);
-		default input #1ps output #1ps;
-		input paddr, pwrite, psel, penable, pwdata, pprot, pstrb;
-		output prdata, pready, pslverr;
-	endclocking: cb_slv
+  clocking cb_slv@(posedge clk);
+    default input #1ps output #1ps;
+    input paddr, pwrite, psel, penable, pwdata, pprot, pstrb;
+    output prdata, pready, pslverr;
+  endclocking: cb_slv
 
-	clocking cb_mon@(posedge clk);
-		default input #1ps output #1ps;
-		input paddr, pwrite, psel, penable, pwdata, pprot, pstrb, prdata, pready, pslverr;
-	endclocking: cb_mon
+  clocking cb_mon@(posedge clk);
+    default input #1ps output #1ps;
+    input paddr, pwrite, psel, penable, pwdata, pprot, pstrb, prdata, pready, pslverr;
+  endclocking: cb_mon
 
-	covergroup cg_apb_command@(posedge clk iff rstn);
-		pwrite: coverpoint pwrite{
-			type_option.weight = 0;
-			bins write = {1};
-			bins read  = {0};
-		}
-		psel: coverpoint psel{
-			type_option.weight = 0;
-			bins sel 	 = {1};
-			bins unsel = {0};
-		}
-		cmd: cross pwrite, psel{
-			bins cmd_write = binsof(psel.sel) && binsof(pwrite.write);
-			bins cmd_read  = binsof(psel.sel) && binsof(pwrite.read);
-			bins cmd_idle  = binsof(psel.unsel);
-		}
-	endgroup: cg_apb_command
+  covergroup cg_apb_command@(posedge clk iff rstn);
+    pwrite: coverpoint pwrite{
+      type_option.weight = 0;
+      bins write = {1};
+      bins read  = {0};
+    }
+    psel: coverpoint psel{
+      type_option.weight = 0;
+      bins sel 	 = {1};
+      bins unsel = {0};
+    }
+    cmd: cross pwrite, psel{
+      bins cmd_write = binsof(psel.sel) && binsof(pwrite.write);
+      bins cmd_read  = binsof(psel.sel) && binsof(pwrite.read);
+      bins cmd_idle  = binsof(psel.unsel);
+    }
+  endgroup: cg_apb_command
 
-	covergroup cg_apb_trans_timing@(posedge clk iff rstn);
-		psel: coverpoint psel{
-      bins single   = (0 => 1 => 1  => 0); 
-      bins burst_2  = (0 => 1 [*4]  => 0); 
-      bins burst_4  = (0 => 1 [*8]  => 0); 
-      bins burst_8  = (0 => 1 [*16] => 0); 
-      bins burst_16 = (0 => 1 [*32] => 0); 
-      bins burst_32 = (0 => 1 [*64] => 0); 
-		}
-		penable: coverpoint penable{
-			bins single = (0 => 1 => 0 [*2:10] => 1);
-			bins burst  = (0 => 1 => 0 				 => 1);
-		}			
-	endgroup: cg_apb_trans_timing
+  covergroup cg_apb_trans_timing@(posedge clk iff rstn);
+    psel: coverpoint psel{
+      bins single   = (0 => 1 => 1  => 0);
+      bins burst_2  = (0 => 1 [*4]  => 0);
+      bins burst_4  = (0 => 1 [*8]  => 0);
+      bins burst_8  = (0 => 1 [*16] => 0);
+      bins burst_16 = (0 => 1 [*32] => 0);
+      bins burst_32 = (0 => 1 [*64] => 0);
+    }
+    penable: coverpoint penable{
+      bins single = (0 => 1 => 0 [*2:10] => 1);
+      bins burst  = (0 => 1 => 0 				 => 1);
+    }
+  endgroup: cg_apb_trans_timing
 
-	covergroup cg_apb_write_read_order@(posedge clk iff(rstn && penable));
-		write_read_order: coverpoint pwrite{
-			bins write_write = (1 => 1);
-			bins write_read  = (1 => 0);
-			bins read_write  = (0 => 1);
-			bins read_read   = (0 => 0);
-		}
-	endgroup: cg_apb_write_read_order
+  covergroup cg_apb_write_read_order@(posedge clk iff(rstn && penable));
+    write_read_order: coverpoint pwrite{
+      bins write_write = (1 => 1);
+      bins write_read  = (1 => 0);
+      bins read_write  = (0 => 1);
+      bins read_read   = (0 => 0);
+    }
+  endgroup: cg_apb_write_read_order
 
-	initial begin: coverage_control
-		if(has_coverage) begin
-			automatic cg_apb_command cg_apb_cmd = new();
-			automatic cg_apb_trans_timing cg_apb_t_timing = new();
-			automatic cg_apb_write_read_order cg_apb_wt_rd = new();
-		end
-	end
+  initial begin: coverage_control
+    if(has_coverage) begin
+      automatic cg_apb_command cg_apb_cmd = new();
+      automatic cg_apb_trans_timing cg_apb_t_timing = new();
+      automatic cg_apb_write_read_order cg_apb_wt_rd = new();
+    end
+  end
 
   // PROPERY ASSERTION
   property p_paddr_no_x;
@@ -139,7 +139,7 @@ interface apb_if(input clk, input rstn);
 
   property p_write_read_burst_trans;
     logic[31:0] addr;
-    @(posedge clk) ($rose(penable) && pwrite, addr=paddr) |-> (##2 ($rose(penable) && !pwrite && addr==paddr)); 
+    @(posedge clk) ($rose(penable) && pwrite, addr=paddr) |-> (##2 ($rose(penable) && !pwrite && addr==paddr));
   endproperty: p_write_read_burst_trans
   c_p_write_read_burst_trans: cover property(p_write_read_burst_trans);
 
@@ -161,7 +161,7 @@ interface apb_if(input clk, input rstn);
 
   property p_read_write_read_burst_trans;
     logic[31:0] addr;
-    @(posedge clk) ($rose(penable) && pwrite, addr=paddr) |-> ##2 ($rose(penable) && !pwrite && addr==paddr);  
+    @(posedge clk) ($rose(penable) && pwrite, addr=paddr) |-> ##2 ($rose(penable) && !pwrite && addr==paddr);
   endproperty: p_read_write_read_burst_trans
   c_p_read_write_read_burst_trans: cover property(p_read_write_read_burst_trans);
 
