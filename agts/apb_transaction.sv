@@ -1,14 +1,14 @@
 `ifndef APB_TRANSACTION_SV
 `define APB_TRANSACTION_SV
 
-class apb_transaction#(int ADDR_WIDTH=32, int DATA_WIDTH=32) extends uvm_sequence_item;
+class apb_transaction extends uvm_sequence_item;
 
-  rand bit [ADDR_WIDTH-1:0]   addr;
-  rand bit [DATA_WIDTH-1:0]   data;
-  rand bit [DATA_WIDTH/8-1:0] strb;
-  rand bit [2:0]              prot;
-  rand apb_trans_kind_t       trans_kind;
-  rand apb_trans_status_t     trans_status;
+  rand bit [`ADDR_WIDTH-1:0]   addr;
+  rand bit [`DATA_WIDTH-1:0]   data;
+  rand bit [`DATA_WIDTH/8-1:0] strb;
+  rand bit [2:0]               prot;
+  rand apb_trans_kind_t        trans_kind;
+  rand apb_trans_status_t      trans_status;
 
   rand int idle_cycles;
 

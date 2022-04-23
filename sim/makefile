@@ -1,5 +1,5 @@
 TOP 			= apb_tb
-TEST 		 ?= apb3_single_trans_test
+TEST 		 ?= apb4_single_trans_test
 VERDI    ?= 0
 GUI      ?= 0
 COV      ?= 0
@@ -11,7 +11,7 @@ INCDIR    = +incdir+../{agts,cfg,env,seq_lib,seq_lib/apb3_seq_lib,seq_lib/apb4_s
 TESTLIST  = apb_single_trans_test
 
 VCOMP     = vlogan $(INCDIR) -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ps/1ps -l $(OUT)/log/comp_$(TOP).log
-ELAB      = vcs -cpp g++-4.4 -cc gcc-4.4 -full64 -sverilog -ntb_opts uvm-1.2 -debug_acc+all -debug_region+cell+encrypt -l $(OUT)/log/elab_$(TOP).log -o $(OUT)/obj/apb_tb.simv
+ELAB      = vcs -full64 -sverilog -ntb_opts uvm-1.2 -debug_acc+all -debug_region+cell+encrypt -CFLAGS '--std=c99 -fno-extended-identifiers' -LDFLAGS '-Wl,--no-as-needed' -l $(OUT)/log/elab_$(TOP).log -o $(OUT)/obj/apb_tb.simv
 RUN       = $(OUT)/obj/apb_tb.simv +ntb_random_seed=$(SEED) +UVM_NO_RELNOTES +UVM_VERBOSITY=$(VERB)
 COV_OPTS  = -full64 -dir $(CM_DIR)
 CM_DIR   ?= $(OUT)/cov.vdb

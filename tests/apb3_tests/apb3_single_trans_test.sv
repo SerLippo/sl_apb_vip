@@ -13,7 +13,6 @@ class apb3_single_trans_test extends apb_base_test;
     super.build_phase(phase);
     cfg = apb_config::type_id::create("cfg");
     cfg.apb_verison = APB3;
-    cfg.apb_bus_width = BUS_WIDTH_16;
     uvm_config_db#(apb_config)::set(this, "env.*", "cfg", cfg);
     env = apb_env::type_id::create("env", this);
   endfunction: build_phase

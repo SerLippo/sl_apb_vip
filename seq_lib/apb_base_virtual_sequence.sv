@@ -5,8 +5,7 @@ class apb_base_virtual_sequence extends uvm_sequence;
 
   virtual apb_if vif;
   apb_config cfg;
-  int bus_width;
-  bit[31:0] mem[bit[31:0]];
+  bit[`DATA_WIDTH-1:0] mem[bit[`ADDR_WIDTH-1:0]];
 
   `uvm_object_utils(apb_base_virtual_sequence)
   `uvm_declare_p_sequencer(apb_master_sequencer)
@@ -18,14 +17,6 @@ class apb_base_virtual_sequence extends uvm_sequence;
   task body();
     vif = p_sequencer.vif;
     cfg = p_sequencer.cfg;
-    if(cfg.apb_bus_width == BUS_WIDTH_8)
-      bus_width = 8;
-    else if(cfg.apb_bus_width == BUS_WIDTH_16)
-      bus_width = 16;
-    else if(cfg.apb_bus_width == BUS_WIDTH_32)
-      bus_width = 32;
-    else
-      `uvm_error("VIRT_SEQ", $sformatf("wrong apb_bus_width configed, %0s", cfg.apb_bus_width))
   endtask: body
 
   function bit check_mem_data(bit[31:0] addr, bit[31:0] data);

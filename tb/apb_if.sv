@@ -1,19 +1,19 @@
 `ifndef APB_IF_SV
 `define APB_IF_SV
 
-interface apb_if#(parameter int ADDR_WIDTH=32, parameter int DATA_WIDTH=32)(input clk, input rstn);
+interface apb_if(input clk, input rstn);
 
   // apb signal
-  logic [ADDR_WIDTH-1:0]   paddr;
-  logic                    pwrite;
-  logic                    psel;
-  logic                    penable;
-  logic [DATA_WIDTH-1:0]   pwdata;
-  logic [2:0]              pprot;
-  logic [DATA_WIDTH/8-1:0] pstrb;
-  logic [DATA_WIDTH-1:0]   prdata;
-  logic                    pready;
-  logic                    pslverr;
+  logic [`ADDR_WIDTH-1:0]   paddr;
+  logic                     pwrite;
+  logic                     psel;
+  logic                     penable;
+  logic [`DATA_WIDTH-1:0]   pwdata;
+  logic [2:0]               pprot;
+  logic [`DATA_WIDTH/8-1:0] pstrb;
+  logic [`DATA_WIDTH-1:0]   prdata;
+  logic                     pready;
+  logic                     pslverr;
 
   // control flags
   bit has_checks = 1;

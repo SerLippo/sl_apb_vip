@@ -1,9 +1,7 @@
 `ifndef APB_MASTER_SEQ_LIB_SV
 `define APB_MASTER_SEQ_LIB_SV
 
-class apb_master_base_sequence#(int ADDR_WIDTH=32, int DATA_WIDTH=32) extends uvm_sequence;
-
-  apb_transaction#(ADDR_WIDTH, DATA_WIDTH) item, r_item;
+class apb_master_base_sequence extends uvm_sequence#(apb_transaction);
 
   `uvm_object_utils(apb_master_base_sequence)
 
@@ -14,11 +12,11 @@ class apb_master_base_sequence#(int ADDR_WIDTH=32, int DATA_WIDTH=32) extends uv
 endclass: apb_master_base_sequence
 
 class apb_mst_single_wt_seq extends apb_master_base_sequence;
-  rand bit [ADDR_WIDTH-1:0]   addr;
-  rand bit [DATA_WIDTH-1:0]   data;
-  rand bit [DATA_WIDTH/8-1:0] strb;
-  rand bit [2:0]              prot;
-  apb_trans_status_t          trans_status;
+  rand bit [`ADDR_WIDTH-1:0]   addr;
+  rand bit [`DATA_WIDTH-1:0]   data;
+  rand bit [`DATA_WIDTH/8-1:0] strb;
+  rand bit [2:0]               prot;
+  apb_trans_status_t           trans_status;
 
   `uvm_object_utils(apb_mst_single_wt_seq)
 
@@ -28,7 +26,7 @@ class apb_mst_single_wt_seq extends apb_master_base_sequence;
 
   virtual task body();
     `uvm_info("APB_MST_SEQ", "apb_mst_single_wt_seq started", UVM_HIGH)
-    `uvm_do_with(item, {
+    `uvm_do_with(req, {
       trans_kind == WRITE;
       addr == local::addr;
       data == local::data;
@@ -36,19 +34,18 @@ class apb_mst_single_wt_seq extends apb_master_base_sequence;
       prot == local::prot;
     })
     get_response(rsp);
-    void'($cast(r_item, rsp));
-    trans_status = r_item.trans_status;
+    trans_status = rsp.trans_status;
     `uvm_info("APB_MST_SEQ", "apb_mst_single_wt_seq finished", UVM_HIGH)
   endtask: body
 
 endclass: apb_mst_single_wt_seq
 
 class apb_mst_single_rd_seq extends apb_master_base_sequence;
-  rand bit [ADDR_WIDTH-1:0]   addr;
-  rand bit [DATA_WIDTH-1:0]   data;
-  rand bit [DATA_WIDTH/8-1:0] strb = 4'b0;
-  rand bit [2:0]              prot;
-  apb_trans_status_t          trans_status;
+  rand bit [`ADDR_WIDTH-1:0]   addr;
+  rand bit [`DATA_WIDTH-1:0]   data;
+  rand bit [`DATA_WIDTH/8-1:0] strb = 4'b0;
+  rand bit [2:0]               prot;
+  apb_trans_status_t           trans_status;
 
   `uvm_object_utils(apb_mst_single_rd_seq)
 
@@ -58,28 +55,27 @@ class apb_mst_single_rd_seq extends apb_master_base_sequence;
 
   virtual task body();
     `uvm_info("APB_MST_SEQ", "apb_mst_single_rd_seq started", UVM_HIGH)
-    `uvm_do_with(item, {
+    `uvm_do_with(req, {
       trans_kind == READ;
       addr == local::addr;
       strb == local::strb;
       prot == local::prot;
     })
     get_response(rsp);
-    void'($cast(r_item, rsp));
-    trans_status = r_item.trans_status;
-    data = r_item.data;
+    trans_status = rsp.trans_status;
+    data = rsp.data;
     `uvm_info("APB_MST_SEQ", "apb_mst_single_rd_seq finished", UVM_HIGH)
   endtask: body
 
 endclass: apb_mst_single_rd_seq
 
 class apb_mst_wt_rd_seq extends apb_master_base_sequence;
-  rand bit [ADDR_WIDTH-1:0]   addr;
-  rand bit [DATA_WIDTH-1:0]   data;
-  rand bit [DATA_WIDTH/8-1:0] strb;
-  rand bit [2:0]              prot;
-  rand int                    idle_cycles;
-  apb_trans_status_t          trans_status;
+  rand bit [`ADDR_WIDTH-1:0]   addr;
+  rand bit [`DATA_WIDTH-1:0]   data;
+  rand bit [`DATA_WIDTH/8-1:0] strb;
+  rand bit [2:0]               prot;
+  rand int                     idle_cycles;
+  apb_trans_status_t           trans_status;
 
   constraint cstr{
     idle_cycles == 0;
@@ -93,7 +89,7 @@ class apb_mst_wt_rd_seq extends apb_master_base_sequence;
 
   virtual task body();
     `uvm_info("APB_MST_SEQ", "apb_mst_wt_rd_seq started", UVM_HIGH)
-    `uvm_do_with(item, {
+    `uvm_do_with(req, {
       trans_kind == WRITE;
       addr == local::addr;
       data == local::data;
@@ -102,27 +98,26 @@ class apb_mst_wt_rd_seq extends apb_master_base_sequence;
       idle_cycles == local::idle_cycles;
     })
     get_response(rsp);
-    `uvm_do_with(item, {
+    `uvm_do_with(req, {
       trans_kind == READ;
       addr == local::addr;
       strb == '0;
       prot == local::prot;
     })
     get_response(rsp);
-    void'($cast(r_item, rsp));
-    data = r_item.data;
-    trans_status = r_item.trans_status;
+    data = rsp.data;
+    trans_status = rsp.trans_status;
     `uvm_info("APB_MST_SEQ", "apb_mst_wt_rd_seq finished", UVM_HIGH)
   endtask: body
 
 endclass: apb_mst_wt_rd_seq
 
 class apb_mst_burst_wt_seq extends apb_master_base_sequence;
-  rand bit [ADDR_WIDTH-1:0]   addr;
-  rand bit [DATA_WIDTH-1:0]   data[];
-  rand bit [DATA_WIDTH/8-1:0] strb[];
-  rand bit [2:0]              prot[];
-  apb_trans_status_t          trans_status;
+  rand bit [`ADDR_WIDTH-1:0]   addr;
+  rand bit [`DATA_WIDTH-1:0]   data[];
+  rand bit [`DATA_WIDTH/8-1:0] strb[];
+  rand bit [2:0]               prot[];
+  apb_trans_status_t           trans_status;
 
   constraint cstr{
     soft data.size() inside {4,8,16,32};
@@ -141,7 +136,7 @@ class apb_mst_burst_wt_seq extends apb_master_base_sequence;
     `uvm_info("APB_MST_SEQ", "apb_mst_burst_wt_seq started", UVM_HIGH)
     trans_status = OK;
     foreach(data[i]) begin
-      `uvm_do_with(item, {
+      `uvm_do_with(req, {
         trans_kind == WRITE;
         addr == local::addr + (i<<2);
         data == local::data[i];
@@ -151,21 +146,20 @@ class apb_mst_burst_wt_seq extends apb_master_base_sequence;
       })
     get_response(rsp);
     end
-    `uvm_do_with(item, {
+    `uvm_do_with(req, {
       trans_kind == IDLE;
     })
     get_response(rsp);
-    void'($cast(r_item, rsp));
-    trans_status = r_item.trans_status == ERROR ? ERROR : trans_status;
+    trans_status = rsp.trans_status == ERROR ? ERROR : trans_status;
     `uvm_info("APB_MST_SEQ", "apb_mst_burst_wt_seq finished", UVM_HIGH)
   endtask: body
 endclass: apb_mst_burst_wt_seq
 
 class apb_mst_burst_rd_seq extends apb_master_base_sequence;
-  rand bit [ADDR_WIDTH-1:0]   addr;
-  rand bit [DATA_WIDTH-1:0]   data[];
-  rand bit [2:0]              prot[];
-  apb_trans_status_t          trans_status;
+  rand bit [`ADDR_WIDTH-1:0]   addr;
+  rand bit [`DATA_WIDTH-1:0]   data[];
+  rand bit [2:0]               prot[];
+  apb_trans_status_t           trans_status;
 
   constraint cstr{
     soft data.size() inside {4,8,16,32};
@@ -182,7 +176,7 @@ class apb_mst_burst_rd_seq extends apb_master_base_sequence;
     `uvm_info("APB_MST_SEQ", "apb_mst_burst_rd_seq started", UVM_HIGH)
     trans_status = OK;
     foreach(data[i]) begin
-      `uvm_do_with(item, {
+      `uvm_do_with(req, {
         trans_kind == READ;
         addr == local::addr + (i<<2);
         strb == '0;
@@ -190,15 +184,13 @@ class apb_mst_burst_rd_seq extends apb_master_base_sequence;
         idle_cycles == 0;
       })
       get_response(rsp);
-      void'($cast(r_item, rsp));
-      data[i] = r_item.data;
+      data[i] = rsp.data;
     end
-    `uvm_do_with(item, {
+    `uvm_do_with(req, {
       trans_kind == IDLE;
     })
     get_response(rsp);
-    void'($cast(r_item, rsp));
-    trans_status = r_item.trans_status == ERROR ? ERROR : trans_status;
+    trans_status = rsp.trans_status == ERROR ? ERROR : trans_status;
     `uvm_info("APB_MST_SEQ", "apb_mst_burst_rd_seq finished", UVM_HIGH)
   endtask: body
 endclass: apb_mst_burst_rd_seq

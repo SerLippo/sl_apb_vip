@@ -6,9 +6,6 @@ class apb_config extends uvm_object;
   // config APB verison: APB2 APB3 APB4
   apb_verison_t apb_verison = APB3;
 
-  // config APB bus wide: BUS_WIDTH_8 BUS_WIDTH_16 BUS_WIDTH_32
-  apb_bus_width_t apb_bus_width = BUS_WIDTH_32;
-
   // config parameter
   uvm_active_passive_enum is_active = UVM_ACTIVE;
 
@@ -33,7 +30,7 @@ class apb_config extends uvm_object;
       return 0;
   endfunction: get_pready_additional_cycles
 
-  virtual function int get_pslverr_status();
+  virtual function bit get_pslverr_status();
     if(slave_pslverr_random && $urandom_range(0, 20) == 0)
       return 1;
     else

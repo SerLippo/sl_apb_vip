@@ -18,7 +18,7 @@ class apb3_burst_trans_virt_seq extends apb_base_virtual_sequence;
   endfunction: new
 
   task body();
-    bit[31:0] addr;
+    bit[`ADDR_WIDTH-1:0] addr;
     super.body();
     this.wait_reset_release();
     this.wait_cycles(10);

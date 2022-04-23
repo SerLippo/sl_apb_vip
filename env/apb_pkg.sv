@@ -1,12 +1,15 @@
 `ifndef APB_PKG_SV
 `define APB_PKG_SV
 
+`include "apb_define.sv"
+`include "apb_if.sv"
+
 package apb_pkg;
 
   import uvm_pkg::*;
   `include "uvm_macros.svh"
 
-  `include "apb_define.sv"
+  `include "apb_typedef.sv"
   `include "apb_config.sv"
 
   `include "apb_transaction.sv"

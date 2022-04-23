@@ -4,7 +4,6 @@
 `timescale 1ps/1ps
 import uvm_pkg::*;
 `include "uvm_macros.svh"
-`include "apb_if.sv"
 import apb_pkg::*;
 
 module apb_tb;
@@ -26,11 +25,11 @@ module apb_tb;
     join_none
   end
 
-  apb_if#(16, 16) intf(clk, rstn);
+  apb_if intf(clk, rstn);
 
   initial begin
-    uvm_config_db#(virtual apb_if#(16, 16))::set(uvm_root::get(), "uvm_test_top.env.mst", "vif", intf);
-    uvm_config_db#(virtual apb_if#(16, 16))::set(uvm_root::get(), "uvm_test_top.env.slv", "vif", intf);
+    uvm_config_db#(virtual apb_if)::set(uvm_root::get(), "uvm_test_top.env.mst", "vif", intf);
+    uvm_config_db#(virtual apb_if)::set(uvm_root::get(), "uvm_test_top.env.slv", "vif", intf);
     run_test("apb_single_transaction_test");
   end
 
