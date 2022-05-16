@@ -18,52 +18,40 @@ class apb_slave_monitor extends uvm_monitor;
   endfunction: new
 
   task run_phase(uvm_phase phase);
-    fork
-      monitor_trans();
-    join_none
+    @(negedge vif.rstn)
+      do @(posedge vif.clk);
+      while(vif.rstn != 1);
+
+    monitor_trans();
   endtask: run_phase
 
   task monitor_trans();
-    if(cfg.apb_verison == APB2) begin
-      forever begin
-        collect_trans_apb2();
-        item_slv_mon_ana_port.write(trans_collected);
-      end
-    end
-    else if(cfg.apb_verison == APB3) begin
-      forever begin
-        collect_trans_apb3();
-        item_slv_mon_ana_port.write(trans_collected);
-      end
-    end
-    else if(cfg.apb_verison == APB4) begin
-      forever begin
-        collect_trans_apb4();
-        item_slv_mon_ana_port.write(trans_collected);
-      end
+    process main_thread;
+    process rst_mon_thread;
+
+    forever begin
+      fork
+        begin
+          main_thread = process::self();
+          this.collect_trans();
+          item_slv_mon_ana_port.write(trans_collected);
+          if(rst_mon_thread) rst_mon_thread.kill();
+        end
+        begin
+          rst_mon_thread = process::self();
+          @(negedge vif.rstn)
+            if(main_thread) main_thread.kill();
+        end
+      join_any
     end
   endtask: monitor_trans
 
-  task collect_trans_apb2();
+  task collect_trans();
     void'(this.begin_tr(trans_collected));
     @(vif.cb_mon);
     void'(this.begin_tr(trans_collected));
     this.end_tr(trans_collected);
-  endtask: collect_trans_apb2
-
-  task collect_trans_apb3();
-    void'(this.begin_tr(trans_collected));
-    @(vif.cb_mon);
-    void'(this.begin_tr(trans_collected));
-    this.end_tr(trans_collected);
-  endtask: collect_trans_apb3
-
-  task collect_trans_apb4();
-    void'(this.begin_tr(trans_collected));
-    @(vif.cb_mon);
-    void'(this.begin_tr(trans_collected));
-    this.end_tr(trans_collected);
-  endtask: collect_trans_apb4
+  endtask: collect_trans
 
 endclass: apb_slave_monitor
 
