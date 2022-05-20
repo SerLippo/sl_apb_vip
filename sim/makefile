@@ -7,7 +7,7 @@ PARTCOMP ?= 1
 SEED      = `date "+%m%d%H%M%S"`
 OUT      ?= out
 VERB     ?= UVM_HIGH#{UVM_NONE, UVM_LOW, UVM_MEDIUM, UVM_HIGH}
-INCDIR    = +incdir+../{agts,cfg,env,seq_lib,seq_lib/apb3_seq_lib,seq_lib/apb4_seq_lib,tb,tests,tests/apb3_tests,tests/apb4_tests}
+INCDIR    = +incdir+../{src,env,seq_lib,seq_lib/apb3_seq_lib,seq_lib/apb4_seq_lib,tb,tests,tests/apb3_tests,tests/apb4_tests}
 TESTLIST  = apb_single_trans_test
 
 VCOMP     = vlogan $(INCDIR) -full64 -sverilog -ntb_opts uvm-1.2 -timescale=1ps/1ps -l $(OUT)/log/comp_$(TOP).log
@@ -46,12 +46,16 @@ prepare:
 	mkdir -p $(OUT)/obj
 	mkdir -p .shadow
 
-comp: prepare .shadow/compile_uvm
-	$(VCOMP) ../env/apb_pkg.sv
+comp: prepare .shadow/compile_uvm .shadow/compile_apb
+	$(VCOMP) ../env/apb_test_pkg.sv
 	$(VCOMP) ../tb/apb_tb.sv
 
 .shadow/compile_uvm:
 	${VCOMP} -ntb_opts uvm-1.2
+	@touch $@;
+
+.shadow/compile_apb:
+	$(VCOMP) ../src/apb_pkg.sv
 	@touch $@;
 
 elab: comp

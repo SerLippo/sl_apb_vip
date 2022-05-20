@@ -4,7 +4,7 @@
 `timescale 1ps/1ps
 import uvm_pkg::*;
 `include "uvm_macros.svh"
-import apb_pkg::*;
+import apb_test_pkg::*;
 
 module apb_tb;
   bit clk, rstn;

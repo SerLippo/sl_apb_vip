@@ -23,10 +23,6 @@ package apb_pkg;
   `include "apb_slave_monitor.sv"
   `include "apb_slave_agent.sv"
 
-  `include "apb_env.sv"
-  `include "apb_sequences.svh"
-  `include "apb_tests.svh"
-
 endpackage: apb_pkg
 
 `endif
