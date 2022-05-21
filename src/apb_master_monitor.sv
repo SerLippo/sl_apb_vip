@@ -33,6 +33,7 @@ class apb_master_monitor extends uvm_monitor;
         begin
           main_thread = process::self();
           this.collect_trans();
+          item_mst_mon_ana_port.write(trans_collected);
           if(rst_mon_thread) rst_mon_thread.kill();
         end
         begin
