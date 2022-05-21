@@ -34,7 +34,6 @@ class apb_slave_monitor extends uvm_monitor;
         begin
           main_thread = process::self();
           this.collect_trans();
-          item_slv_mon_ana_port.write(trans_collected);
           if(rst_mon_thread) rst_mon_thread.kill();
         end
         begin
@@ -47,10 +46,13 @@ class apb_slave_monitor extends uvm_monitor;
   endtask: monitor_trans
 
   task collect_trans();
-    void'(this.begin_tr(trans_collected));
-    @(vif.cb_mon);
-    void'(this.begin_tr(trans_collected));
-    this.end_tr(trans_collected);
+    forever begin
+      void'(this.begin_tr(trans_collected));
+      @(vif.cb_mon);
+      void'(this.begin_tr(trans_collected));
+      this.end_tr(trans_collected);
+      item_slv_mon_ana_port.write(trans_collected);
+    end
   endtask: collect_trans
 
 endclass: apb_slave_monitor
