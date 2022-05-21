@@ -23,6 +23,8 @@ package apb_pkg;
   `include "apb_slave_monitor.sv"
   `include "apb_slave_agent.sv"
 
+  `include "reg2apb_adapter.sv"
+
 endpackage: apb_pkg
 
 `endif

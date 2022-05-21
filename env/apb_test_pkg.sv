@@ -1,5 +1,5 @@
-`ifndef APB_PKG_SV
-`define APB_PKG_SV
+`ifndef APB_TEST_PKG_SV
+`define APB_TEST_PKG_SV
 
 `include "apb_define.sv"
 

@@ -11,7 +11,7 @@ class reg2apb_adapter extends uvm_reg_adapter;
   endfunction: new
 
   function uvm_sequence_item reg2bus(const ref uvm_reg_bus_op rw);
-    apb_transaction t = register_trans::type_id::create("t");
+    apb_transaction t = apb_transaction::type_id::create("t");
     t.trans_kind = (rw.kind == UVM_WRITE) ? WRITE : READ;
     t.addr = rw.addr;
     t.data = rw.data;
